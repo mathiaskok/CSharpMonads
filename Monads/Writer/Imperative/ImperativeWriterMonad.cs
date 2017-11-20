@@ -54,6 +54,23 @@ namespace Monads.Writer.Imperative
       return new ImperativeWriterMonad<U>(u, WriterAction);
     }
 
+    public ImperativeWriterMonad<U> Bind<U>(Func<T, KeyValuePair<U, IEnumerable<string>>> binder)
+    {
+      var kvp = binder(Value);
+      foreach (string m in kvp.Value)
+        WriterAction(m);
+
+      return new ImperativeWriterMonad<U>(kvp.Key, WriterAction);
+    }
+
+    public ImperativeWriterMonad<U> Bind<U>(Func<T, KeyValuePair<U, string>> binder)
+    {
+      var kvp = binder(Value);
+      WriterAction(kvp.Value);
+
+      return new ImperativeWriterMonad<U>(kvp.Key, WriterAction);
+    }
+
     public ImperativeWriterMonad<U> Map<U>(Func<T, U> mapper)
     {
       return new ImperativeWriterMonad<U>(mapper(Value), WriterAction);
