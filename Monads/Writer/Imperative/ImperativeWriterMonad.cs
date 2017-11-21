@@ -22,57 +22,56 @@ namespace Monads.Writer.Imperative
     public ImperativeWriterMonad<U> Bind<U>(Func<T, (U, IEnumerable<string>)> binder)
     {
       var (u, w) = binder(Value);
-      foreach (string m in w)
-        WriterAction(m);
-
-      return new ImperativeWriterMonad<U>(u, WriterAction);
+      return Next(u, w);
     }
 
     public ImperativeWriterMonad<U> Bind<U>(Func<T, (U, string)> binder)
     {
       var (u, w) = binder(Value);
-      WriterAction(w);
-
-      return new ImperativeWriterMonad<U>(u, WriterAction);
+      return Next(u, w);
     }
 
     public ImperativeWriterMonad<U> Bind<U>(Func<T, Tuple<U, IEnumerable<string>>> binder)
     {
       var (u, w) = binder(Value);
-      foreach (string m in w)
-        WriterAction(m);
-
-      return new ImperativeWriterMonad<U>(u, WriterAction);
+      return Next(u, w);
     }
 
     public ImperativeWriterMonad<U> Bind<U>(Func<T, Tuple<U, string>> binder)
     {
       var (u, w) = binder(Value);
-      WriterAction(w);
-
-      return new ImperativeWriterMonad<U>(u, WriterAction);
+      return Next(u, w);
     }
 
     public ImperativeWriterMonad<U> Bind<U>(Func<T, KeyValuePair<U, IEnumerable<string>>> binder)
     {
       var kvp = binder(Value);
-      foreach (string m in kvp.Value)
-        WriterAction(m);
-
-      return new ImperativeWriterMonad<U>(kvp.Key, WriterAction);
+      return Next(kvp.Key, kvp.Value);
     }
 
     public ImperativeWriterMonad<U> Bind<U>(Func<T, KeyValuePair<U, string>> binder)
     {
       var kvp = binder(Value);
-      WriterAction(kvp.Value);
-
-      return new ImperativeWriterMonad<U>(kvp.Key, WriterAction);
+      return Next(kvp.Key, kvp.Value);
     }
 
     public ImperativeWriterMonad<U> Map<U>(Func<T, U> mapper)
     {
       return new ImperativeWriterMonad<U>(mapper(Value), WriterAction);
+    }
+
+    private ImperativeWriterMonad<U> Next<U>(U value, IEnumerable<string> messages)
+    {
+      foreach (string m in messages)
+        WriterAction(m);
+
+      return new ImperativeWriterMonad<U>(value, WriterAction);
+    }
+
+    private ImperativeWriterMonad<U> Next<U>(U value, string message)
+    {
+      WriterAction(message);
+      return new ImperativeWriterMonad<U>(value, WriterAction);
     }
   }
 }
