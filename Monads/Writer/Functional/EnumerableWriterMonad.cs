@@ -29,44 +29,44 @@ namespace Monads.Writer.Functional
 
     public EnumerableWriterMonad<U> Bind<U>(Func<T, EnumerableWriterMonad<U>> binder)
     {
-      var (u, state) = binder(Value);
-      return new EnumerableWriterMonad<U>(u, state);
+      var (u, w) = binder(Value);
+      return Next(u, w);
     }
 
     public EnumerableWriterMonad<U> Bind<U>(Func<T, (U, IEnumerable<string>)> binder)
     {
-      var (u, state) = binder(Value);
-      return new EnumerableWriterMonad<U>(u, state);
+      var (u, w) = binder(Value);
+      return Next(u, w);
     }
 
     public EnumerableWriterMonad<U> Bind<U>(Func<T, (U, string)> binder)
     {
-      var (u, state) = binder(Value);
-      return new EnumerableWriterMonad<U>(u, Append(state));
+      var (u, w) = binder(Value);
+      return Next(u, w);
     }
 
     public EnumerableWriterMonad<U> Bind<U>(Func<T, Tuple<U, IEnumerable<string>>> binder)
     {
-      var (u, state) = binder(Value);
-      return new EnumerableWriterMonad<U>(u, state);
+      var (u, w) = binder(Value);
+      return Next(u, w);
     }
 
     public EnumerableWriterMonad<U> Bind<U>(Func<T, Tuple<U, string>> binder)
     {
-      var (u, state) = binder(Value);
-      return new EnumerableWriterMonad<U>(u, Append(state));
+      var (u, w) = binder(Value);
+      return Next(u, w);
     }
 
     public EnumerableWriterMonad<U> Bind<U>(Func<T, KeyValuePair<U, IEnumerable<string>>> binder)
     {
       var kvp = binder(Value);
-      return new EnumerableWriterMonad<U>(kvp.Key, kvp.Value);
+      return Next(kvp.Key, kvp.Value);
     }
 
     public EnumerableWriterMonad<U> Bind<U>(Func<T, KeyValuePair<U, string>> binder)
     {
       var kvp = binder(Value);
-      return new EnumerableWriterMonad<U>(kvp.Key, Append(kvp.Value));
+      return Next(kvp.Key, kvp.Value);
     }
 
     public EnumerableWriterMonad<U> Map<U>(Func<T, U> mapper)
@@ -81,6 +81,18 @@ namespace Monads.Writer.Functional
         WriterState.Concat(other.WriterState));
     }
 
+    public StateWriterMonad<T, TState> Transform<TState>(
+      Func<IEnumerable<string>, TState> stateTransformer,
+      Func<TState, string, TState> stateAppender,
+      Func<TState, string> stateStringifier)
+    {
+      return StateWriterMonad<T, TState>.Return(
+        Value,
+        stateTransformer(WriterState),
+        stateAppender,
+        stateStringifier);
+    }
+
     private IEnumerable<string> Append(string str)
     {
       foreach (string m in WriterState)
@@ -88,5 +100,11 @@ namespace Monads.Writer.Functional
 
       yield return str;
     }
+
+    private EnumerableWriterMonad<U> Next<U>(U value, IEnumerable<string> messages) =>
+      new EnumerableWriterMonad<U>(value, WriterState.Concat(messages));
+
+    private EnumerableWriterMonad<U> Next<U>(U value, string message) =>
+      new EnumerableWriterMonad<U>(value, WriterState.Append(message));
   }
 }
