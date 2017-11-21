@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Monads.Writer.Functional
 {
@@ -67,7 +66,7 @@ namespace Monads.Writer.Functional
 
     public StateWriterMonad<T, TState> Combine(
       StateWriterMonad<T, TState> other,
-      Func<T,T,T> valueCombiner,
+      Func<T, T, T> valueCombiner,
       Func<TState, TState, TState> stateCombiner)
     {
       return new StateWriterMonad<T, TState>(
