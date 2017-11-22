@@ -23,17 +23,14 @@ namespace Monads.Util
           return monoid(list[start], list[end]);
 
         int split = diff / 2;
+        int startSplit = start + split;
+
         return monoid(
-          Internal(start, split),
-          Internal(split + 1, end));
+          Internal(start, startSplit),
+          Internal(startSplit + 1, end));
       }
 
-      int maxIndex = list.Count - 1;
-      int gSplit = maxIndex / 2;
-
-      return monoid(
-        Internal(0, gSplit),
-        Internal(gSplit + 1, maxIndex));
+      return Internal(0, list.Count - 1);
     }
   }
 }
