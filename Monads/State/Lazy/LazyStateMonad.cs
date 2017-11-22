@@ -73,5 +73,19 @@ namespace Monads.State.Lazy
         return (kvp.Key, kvp.Value);
       });
     }
+
+    public LazyStateMonad<VValue, TState> Combine<UValue, VValue>(
+      LazyStateMonad<UValue, TState> other,
+      Func<TValue, UValue, VValue> valueCombiner,
+      Func<TState, TState, TState> stateCombiner)
+    {
+      return new LazyStateMonad<VValue, TState>(s =>
+      {
+        (var v1, var s1) = StateFunction(s);
+        (var v2, var s2) = other.StateFunction(s);
+
+        return (valueCombiner(v1, v2), stateCombiner(s1, s2));
+      });
+    }
   }
 }
