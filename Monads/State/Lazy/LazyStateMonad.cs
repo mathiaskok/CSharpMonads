@@ -74,6 +74,15 @@ namespace Monads.State.Lazy
       });
     }
 
+    public LazyStateMonad<UValue, TState> Bind<UValue>(Func<TValue, LazyStateMonad<UValue, TState>> binder)
+    {
+      return new LazyStateMonad<UValue, TState>(s =>
+      {
+        (var tv, var ts) = StateFunction(s);
+        return binder(tv).StateFunction(ts);
+      });
+    }
+
     public LazyStateMonad<VValue, TState> Combine<UValue, VValue>(
       LazyStateMonad<UValue, TState> other,
       Func<TValue, UValue, VValue> valueCombiner,
@@ -85,6 +94,24 @@ namespace Monads.State.Lazy
         (var v2, var s2) = other.StateFunction(s);
 
         return (valueCombiner(v1, v2), stateCombiner(s1, s2));
+      });
+    }
+
+    public LazyStateMonad<UValue, TState> Map<UValue>(Func<TValue, UValue> mapper)
+    {
+      return new LazyStateMonad<UValue, TState>(s =>
+      {
+        (var tv, var ts) = StateFunction(s);
+        return (mapper(tv), ts);
+      });
+    }
+
+    public LazyStateMonad<TValue, TState> Transform(Func<TState, TState> stateTransformer)
+    {
+      return new LazyStateMonad<TValue, TState>(s =>
+      {
+        (var tv, var ts) = StateFunction(s);
+        return (tv, stateTransformer(ts));
       });
     }
   }
