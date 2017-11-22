@@ -7,10 +7,10 @@ namespace Monads.Util
 {
   public static class ListExtensions
   {
-    public static T BinaryMappend<T>(this IList<T> list, Func<T, T, T> monoid)
+    public static T BinaryMappend<T>(this IList<T> list, Func<T, T, T> semiGroup)
     {
       return list.Any() ?
-         list.InternalBinaryMappend(monoid) :
+         list.InternalBinaryMappend(semiGroup) :
          throw new ArgumentException("list must not be empty");
     }
 
