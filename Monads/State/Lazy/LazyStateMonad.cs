@@ -13,15 +13,65 @@ namespace Monads.State.Lazy
       StateFunction = stateFunction;
     }
 
+    public static LazyStateMonad<TValue, TState> Return(TValue value) =>
+      new LazyStateMonad<TValue, TState>(s => (value, s));
+
     public LazyStateMonad<UValue, TState> Bind<UValue>(Func<TValue, Func<TState, (UValue, TState)>> binder)
     {
-      Func<TState, (UValue, TState)> func = s =>
+      return new LazyStateMonad<UValue, TState>(s =>
       {
         (var tv, var ts) = StateFunction(s);
         return binder(tv)(ts);
-      };
+      });
+    }
 
-      return new LazyStateMonad<UValue, TState>(func);
+    public LazyStateMonad<UValue, TState> Bind<UValue>(Func<TValue, TState, (UValue, TState)> binder)
+    {
+      return new LazyStateMonad<UValue, TState>(s =>
+      {
+        (var tv, var ts) = StateFunction(s);
+        return binder(tv, ts);
+      });
+    }
+
+    public LazyStateMonad<UValue, TState> Bind<UValue>(Func<TValue, Func<TState, Tuple<UValue, TState>>> binder)
+    {
+      return new LazyStateMonad<UValue, TState>(s =>
+      {
+        (var tv, var ts) = StateFunction(s);
+        (var uv, var us) = binder(tv)(ts);
+        return (uv, us);
+      });
+    }
+
+    public LazyStateMonad<UValue, TState> Bind<UValue>(Func<TValue, TState, Tuple<UValue, TState>> binder)
+    {
+      return new LazyStateMonad<UValue, TState>(s =>
+      {
+        (var tv, var ts) = StateFunction(s);
+        (var uv, var us) = binder(tv, ts);
+        return (uv, us);
+      });
+    }
+
+    public LazyStateMonad<UValue, TState> Bind<UValue>(Func<TValue, Func<TState, KeyValuePair<UValue, TState>>> binder)
+    {
+      return new LazyStateMonad<UValue, TState>(s =>
+      {
+        (var tv, var ts) = StateFunction(s);
+        var kvp = binder(tv)(ts);
+        return (kvp.Key, kvp.Value);
+      });
+    }
+
+    public LazyStateMonad<UValue, TState> Bind<UValue>(Func<TValue, TState, KeyValuePair<UValue, TState>> binder)
+    {
+      return new LazyStateMonad<UValue, TState>(s =>
+      {
+        (var tv, var ts) = StateFunction(s);
+        var kvp = binder(tv, ts);
+        return (kvp.Key, kvp.Value);
+      });
     }
   }
 }
