@@ -9,10 +9,9 @@ namespace Monads.Util
   {
     public static T BinaryMappend<T>(this IList<T> list, Func<T, T, T> monoid)
     {
-      if (!list.Any())
-        throw new ArgumentException("list must not be empty");
-
-      return list.InternalBinaryMappend(monoid);
+      return list.Any() ?
+         list.InternalBinaryMappend(monoid) :
+         throw new ArgumentException("list must not be empty");
     }
 
     public static T BinaryMappend<T>(this IList<T> list, T defaultValue, Func<T, T, T> monoid)
