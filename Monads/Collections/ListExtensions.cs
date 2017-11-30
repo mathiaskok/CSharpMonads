@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Monads.Collections.ReadOnly;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,6 +7,14 @@ namespace Monads.Collections
 {
   public static class ListExtensions
   {
+    public static IReadOnlyList<T> AsReadOnly<T>(this IList<T> list)
+    {
+      if (list is IReadOnlyList<T> rList)
+        return rList;
+      else
+        return new ReadOnlyListAdapter<T>(list);
+    }
+
     public static T BinaryMappend<T>(this IList<T> list, Func<T, T, T> semiGroup)
     {
       return list.Any() ?
