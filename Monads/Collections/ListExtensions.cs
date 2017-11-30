@@ -15,21 +15,21 @@ namespace Monads.Collections
         return new ReadOnlyListAdapter<T>(list);
     }
 
-    public static T BinaryMappend<T>(this IList<T> list, Func<T, T, T> semiGroup)
+    public static T BinaryMappend<T>(this IReadOnlyList<T> list, Func<T, T, T> semiGroup)
     {
       return list.Any() ?
          list.InternalBinaryMappend(semiGroup) :
          throw new ArgumentException("list must not be empty");
     }
 
-    public static T BinaryMappend<T>(this IList<T> list, T defaultValue, Func<T, T, T> monoid)
+    public static T BinaryMappend<T>(this IReadOnlyList<T> list, T defaultValue, Func<T, T, T> monoid)
     {
       return list.Any() ?
         list.InternalBinaryMappend(monoid) :
         defaultValue;
     }
 
-    private static T InternalBinaryMappend<T>(this IList<T> list, Func<T, T, T> semiGroup)
+    private static T InternalBinaryMappend<T>(this IReadOnlyList<T> list, Func<T, T, T> semiGroup)
     {
       T Internal(int start, int end)
       {
