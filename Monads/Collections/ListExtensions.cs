@@ -29,7 +29,7 @@ namespace Monads.Collections
         defaultValue;
     }
 
-    private static T InternalBinaryMappend<T>(this IList<T> list, Func<T, T, T> monoid)
+    private static T InternalBinaryMappend<T>(this IList<T> list, Func<T, T, T> semiGroup)
     {
       T Internal(int start, int end)
       {
@@ -39,12 +39,12 @@ namespace Monads.Collections
         int diff = end - start;
 
         if (diff == 1)
-          return monoid(list[start], list[end]);
+          return semiGroup(list[start], list[end]);
 
         int split = diff / 2;
         int startSplit = start + split;
 
-        return monoid(
+        return semiGroup(
           Internal(start, startSplit),
           Internal(startSplit + 1, end));
       }
