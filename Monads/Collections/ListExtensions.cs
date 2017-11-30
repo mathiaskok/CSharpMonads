@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Monads.Util
+namespace Monads.Collections
 {
   public static class ListExtensions
   {
