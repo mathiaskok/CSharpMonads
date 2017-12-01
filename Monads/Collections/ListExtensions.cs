@@ -1,26 +1,35 @@
-﻿using System;
+﻿using Monads.Collections.ReadOnly;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Monads.Util
+namespace Monads.Collections
 {
   public static class ListExtensions
   {
-    public static T BinaryMappend<T>(this IList<T> list, Func<T, T, T> semiGroup)
+    public static IReadOnlyList<T> AsReadOnly<T>(this IList<T> list)
+    {
+      if (list is IReadOnlyList<T> rList)
+        return rList;
+      else
+        return new ReadOnlyListAdapter<T>(list);
+    }
+
+    public static T BinaryMappend<T>(this IReadOnlyList<T> list, Func<T, T, T> semiGroup)
     {
       return list.Any() ?
          list.InternalBinaryMappend(semiGroup) :
          throw new ArgumentException("list must not be empty");
     }
 
-    public static T BinaryMappend<T>(this IList<T> list, T defaultValue, Func<T, T, T> monoid)
+    public static T BinaryMappend<T>(this IReadOnlyList<T> list, T defaultValue, Func<T, T, T> monoid)
     {
       return list.Any() ?
         list.InternalBinaryMappend(monoid) :
         defaultValue;
     }
 
-    private static T InternalBinaryMappend<T>(this IList<T> list, Func<T, T, T> monoid)
+    private static T InternalBinaryMappend<T>(this IReadOnlyList<T> list, Func<T, T, T> semiGroup)
     {
       T Internal(int start, int end)
       {
@@ -30,12 +39,12 @@ namespace Monads.Util
         int diff = end - start;
 
         if (diff == 1)
-          return monoid(list[start], list[end]);
+          return semiGroup(list[start], list[end]);
 
         int split = diff / 2;
         int startSplit = start + split;
 
-        return monoid(
+        return semiGroup(
           Internal(start, startSplit),
           Internal(startSplit + 1, end));
       }
