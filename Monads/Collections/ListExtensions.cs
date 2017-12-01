@@ -1,7 +1,7 @@
-﻿using Monads.Collections.ReadOnly;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Monads.Collections.ReadOnly;
 
 namespace Monads.Collections
 {
