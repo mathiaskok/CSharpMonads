@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Monads.Collections.ReadOnly;
 using System.Linq;
+using Monads.Collections.ReadOnly;
 
 namespace Monads.Collections
 {
