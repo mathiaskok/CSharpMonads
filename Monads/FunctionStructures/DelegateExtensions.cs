@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using static Monads.Comparers.EqualityComparerExtensions;
+using static Monads.Comparison.EqualityComparerExtensions;
 
 namespace Monads.FunctionStructures
 {

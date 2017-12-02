@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Monads.Comparers
+namespace Monads.Comparison
 {
   public class DelegateEqualityComparer<T> : EqualityComparer<T>
   {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Monads.Comparers
+namespace Monads.Comparison
 {
   public static class HashCodeExtensions
   {

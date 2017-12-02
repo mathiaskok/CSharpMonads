@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using static Monads.Comparers.EqualityComparerExtensions;
+using static Monads.Comparison.EqualityComparerExtensions;
 
 namespace Monads.Collections.ReadOnly
 {
