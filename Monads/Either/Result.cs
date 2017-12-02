@@ -1,5 +1,6 @@
 ﻿using System;
 using Monads.Either.Structures;
+using Monads.FunctionStructures;
 
 namespace Monads.Either
 {
@@ -85,6 +86,40 @@ namespace Monads.Either
         else
           return Failure<TSuccess, TFailure>(failureCombiner(res1.FailureResult, res2.FailureResult));
       }
+    }
+
+    public static IResult<USuccess, TFailure> Apply<TSuccess, USuccess, TFailure>(
+      this IResult<Func<TSuccess, USuccess>, TFailure> func,
+      IResult<TSuccess, TFailure> result)
+    {
+      if (func.IsSuccess)
+        return result.Map(func.SuccessResult);
+      else
+        return Failure<USuccess, TFailure>(func.FailureResult);
+    }
+
+    public static Func<IResult<TSuccess, TFailure>, IResult<USuccess, TFailure>> Lift<TSuccess, USuccess, TFailure>(
+      Func<TSuccess, USuccess> func)
+    {
+      return r1 =>
+      {
+        if (r1.IsSuccess)
+          return Success<USuccess, TFailure>(func(r1.SuccessResult));
+        else
+          return Failure<USuccess, TFailure>(r1.FailureResult);
+      };
+    }
+
+    public static Func<IResult<TSuccess, TFailure>, IResult<USuccess, TFailure>, IResult<VSuccess, TFailure>> Lift<TSuccess, USuccess, VSuccess, TFailure>(
+      Func<TSuccess, USuccess, VSuccess> func)
+    {
+      return (r1, r2) => r1.Map(func.Curry()).Apply(r2);
+    }
+
+    public static Func<IResult<TSuccess, TFailure>, IResult<USuccess, TFailure>, IResult<VSuccess, TFailure>, IResult<XSuccess, TFailure>> Lift<TSuccess, USuccess, VSuccess, XSuccess, TFailure>(
+      Func<TSuccess, USuccess, VSuccess, XSuccess> func)
+    {
+      return (r1, r2, r3) => r1.Map(func.Curry()).Apply(r2).Apply(r3);
     }
   }
 }
