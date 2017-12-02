@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Monads.Either.Structures;
 
 namespace Monads.Either
@@ -65,6 +63,28 @@ namespace Monads.Either
       return result.IsSuccess ?
         binder(result.SuccessResult) :
         Failure<USuccess, TFailure>(result.FailureResult);
+    }
+
+    public static IResult<TSuccess, TFailure> Combine<TSuccess, TFailure>(
+      this IResult<TSuccess, TFailure> res1,
+      IResult<TSuccess, TFailure> res2,
+      Func<TSuccess, TSuccess, TSuccess> successCombiner,
+      Func<TFailure, TFailure, TFailure> failureCombiner)
+    {
+      if (res1.IsSuccess)
+      {
+        if (res2.IsSuccess)
+          return Success<TSuccess, TFailure>(successCombiner(res1.SuccessResult, res2.SuccessResult));
+        else
+          return Failure<TSuccess, TFailure>(res2.FailureResult);
+      }
+      else
+      {
+        if (res2.IsSuccess)
+          return Failure<TSuccess, TFailure>(res1.FailureResult);
+        else
+          return Failure<TSuccess, TFailure>(failureCombiner(res1.FailureResult, res2.FailureResult));
+      }
     }
   }
 }
