@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Monads.Comparers
 {
   public static class EqualityComparerExtensions
   {
-    public static IEqualityComparer<(T, U)> AsTupleComparer<T, U>(IEqualityComparer<T> t, IEqualityComparer<U> u)
+    public static IEqualityComparer<(T, U)> AsTupleComparer<T, U>(
+      IEqualityComparer<T> t,
+      IEqualityComparer<U> u)
     {
       return new DelegateEqualityComparer<(T, U)>(
         (x, y) =>
@@ -48,6 +51,22 @@ namespace Monads.Comparers
           .HashWith(u.GetHashCode(o.Item2))
           .HashWith(v.GetHashCode(o.Item3))
           .HashWith(x.GetHashCode(o.Item4)));
+    }
+
+    public static IEqualityComparer<T> FromValueSelector<T>(Func<T, object> valueSelector)
+    {
+      return new DelegateEqualityComparer<T>(
+        (x, y) => Equals(valueSelector(x), valueSelector(y)),
+        o => valueSelector(o).GetHashCode());
+    }
+
+    public static IEqualityComparer<T> FromValueSelector<T, U>(
+      Func<T, U> valueSelector,
+      IEqualityComparer<U> valueComparer)
+    {
+      return new DelegateEqualityComparer<T>(
+        (x, y) => valueComparer.Equals(valueSelector(x), valueSelector(y)),
+        o => valueComparer.GetHashCode(valueSelector(o)));
     }
   }
 }
