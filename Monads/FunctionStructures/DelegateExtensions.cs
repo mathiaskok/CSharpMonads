@@ -65,5 +65,22 @@ namespace Monads.FunctionStructures
 
       return (t, u, v) => memoized.Apply((t, u, v));
     }
+
+    public static Func<T, Func<U, V>> Curry<T, U, V>(
+      this Func<T, U, V> func)
+    {
+      return
+        t =>
+          u => func(t, u);
+    }
+
+    public static Func<T, Func<U, Func<V, X>>> Curry<T, U, V, X>(
+      this Func<T, U, V, X> func)
+    {
+      return
+        t =>
+          u =>
+            v => func(t, u, v);
+    }
   }
 }
