@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Monads.Collections;
 using Monads.Either;
@@ -58,6 +59,30 @@ namespace Monads.Linq
       return seq
         .Where(t => t.HasValue)
         .Select(t => t.Value);
+    }
+
+    public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> seq)
+    {
+      return seq.SelectMany(t => t);
+    }
+
+    public static T Mappend<T>(this IEnumerable<T> seq, T defaultValue, Func<T, T, T> monoid)
+    {
+      if (seq is IReadOnlyList<T> l)
+        return l.BinaryMappend(defaultValue, monoid);
+      else
+        return seq.Aggregate(defaultValue, monoid);
+    }
+
+    public static T Mappend<T>(this IEnumerable<T> seq, Func<T, T, T> semiGroup)
+    {
+      if (!seq.Any())
+        throw new ArgumentException("seq must not be empty");
+
+      if (seq is IReadOnlyList<T> l)
+        return l.BinaryMappend(semiGroup);
+      else
+        return seq.Aggregate(semiGroup);
     }
   }
 }
