@@ -36,6 +36,14 @@ namespace Monads.Either
       return fail;
     }
 
+    public static bool IsSuccess<TSuccess, TFailure>(IResult<TSuccess, TFailure> res) => res.IsSuccess;
+
+    public static bool IsFailure<TSuccess, TFailure>(IResult<TSuccess, TFailure> res) => res.IsFailure;
+
+    public static TSuccess SuccessResult<TSuccess, TFailure>(IResult<TSuccess, TFailure> res) => res.SuccessResult;
+
+    public static TFailure FailureResult<TSuccess, TFailure>(IResult<TSuccess, TFailure> res) => res.FailureResult;
+
     public static IResult<TSuccess, TFailure> Return<TSuccess, TFailure>(TSuccess result) =>
       Success<TSuccess, TFailure>(result);
 

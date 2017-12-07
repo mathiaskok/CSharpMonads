@@ -44,6 +44,10 @@ namespace Monads.Maybe
         return func();
     }
 
+    public static bool HasValue<T>(IMaybe<T> m) => m.HasValue;
+
+    public static T Value<T>(IMaybe<T> m) => m.Value;
+
     public static IMaybe<U> Map<T, U>(this IMaybe<T> m, Func<T, U> mapper)
     {
       if (m.HasValue)
