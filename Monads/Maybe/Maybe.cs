@@ -108,5 +108,13 @@ namespace Monads.Maybe
     {
       return (m1, m2, m3) => m1.Map(func.Curry()).Apply(m2).Apply(m3);
     }
+
+    public static IMaybe<V> Combine<T, U, V>(this IMaybe<T> t, IMaybe<U> u, Func<T, U, V> combiner)
+    {
+      if (t.HasValue && u.HasValue)
+        return Some(combiner(t.Value, u.Value));
+      else
+        return None<V>();
+    }
   }
 }
