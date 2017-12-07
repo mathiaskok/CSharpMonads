@@ -10,29 +10,6 @@ namespace Monads.Linq
 {
   public static class LinqExtensions
   {
-    public static IEnumerable<T> SelectSome<T>(this IEnumerable<IMaybe<T>> seq)
-    {
-      return seq
-        .Where(HasValue)
-        .Select(Value);
-    }
-
-    public static IEnumerable<TSuccess> SelectSuccess<TSuccess, TFailure>(
-      this IEnumerable<IResult<TSuccess, TFailure>> seq)
-    {
-      return seq
-        .Where(IsSuccess)
-        .Select(SuccessResult);
-    }
-
-    public static IEnumerable<TFailure> SelectFailure<TSuccess, TFailure>(
-      this IEnumerable<IResult<TSuccess, TFailure>> seq)
-    {
-      return seq
-        .Where(IsFailure)
-        .Select(FailureResult);
-    }
-    
     public static IEnumerable<T> Intersperse<T>(this IEnumerable<T> seq, T sep)
     {
       if (!seq.Any())
@@ -67,6 +44,20 @@ namespace Monads.Linq
 
         yield return iter.Current;
       }
+    }
+
+    public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T> seq)
+      where T : class
+    {
+      return seq.Where(t => t != null);
+    }
+
+    public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> seq)
+      where T : struct
+    {
+      return seq
+        .Where(t => t.HasValue)
+        .Select(t => t.Value);
     }
   }
 }

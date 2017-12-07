@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Monads.FunctionStructures;
 using Monads.Maybe.Structures;
 
@@ -119,6 +121,13 @@ namespace Monads.Maybe
         return Some(combiner(t.Value, u.Value));
       else
         return None<V>();
+    }
+
+    public static IEnumerable<T> SelectSome<T>(this IEnumerable<IMaybe<T>> seq)
+    {
+      return seq
+        .Where(HasValue)
+        .Select(Value);
     }
   }
 }

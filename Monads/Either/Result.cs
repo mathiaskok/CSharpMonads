@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Monads.Either.Structures;
 using Monads.FunctionStructures;
 
@@ -128,6 +130,22 @@ namespace Monads.Either
       Func<TSuccess, USuccess, VSuccess, XSuccess> func)
     {
       return (r1, r2, r3) => r1.Map(func.Curry()).Apply(r2).Apply(r3);
+    }
+
+    public static IEnumerable<TSuccess> SelectSuccess<TSuccess, TFailure>(
+      this IEnumerable<IResult<TSuccess, TFailure>> seq)
+    {
+      return seq
+        .Where(IsSuccess)
+        .Select(SuccessResult);
+    }
+
+    public static IEnumerable<TFailure> SelectFailure<TSuccess, TFailure>(
+      this IEnumerable<IResult<TSuccess, TFailure>> seq)
+    {
+      return seq
+        .Where(IsFailure)
+        .Select(FailureResult);
     }
   }
 }
