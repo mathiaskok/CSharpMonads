@@ -68,5 +68,24 @@ namespace Monads.Comparison
         (x, y) => valueComparer.Equals(valueSelector(x), valueSelector(y)),
         o => valueComparer.GetHashCode(valueSelector(o)));
     }
+
+    public static IEqualityComparer<T> CombineWith<T>(
+      this IEqualityComparer<T> fst,
+      IEqualityComparer<T> snd)
+    {
+      return new BiEqualityComparer<T>(fst, snd);
+    }
+
+    public static IEqualityComparer<T> FromComparers<T>(
+      IReadOnlyCollection<IEqualityComparer<T>> comparers)
+    {
+      return new MultiEqualityComparer<T>(comparers);
+    }
+
+    public static IEqualityComparer<T> FromComparers<T>(
+      params IEqualityComparer<T>[] comparers)
+    {
+      return FromComparers(comparers);
+    }
   }
 }
