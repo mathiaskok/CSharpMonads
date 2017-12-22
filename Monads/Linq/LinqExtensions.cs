@@ -61,6 +61,9 @@ namespace Monads.Linq
         .Select(t => t.Value);
     }
 
+    public static IEnumerable<T> WhereNot<T>(this IEnumerable<T> seq, Func<T, bool> predicate) =>
+      seq.Where(t => !predicate(t));
+
     public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> seq)
     {
       return seq.SelectMany(t => t);
@@ -94,21 +97,15 @@ namespace Monads.Linq
     public static bool SequenceDistinct<T>(this IEnumerable<T> seq) =>
       seq.SequenceDistinct(EqualityComparer<T>.Default);
 
-    public static ISet<T> NonDistinct<T>(this IEnumerable<T> seq, IEqualityComparer<T> comparer)
+    public static IReadOnlyCollection<T> NonDistinct<T>(this IEnumerable<T> seq, IEqualityComparer<T> comparer)
     {
       HashSet<T> dis = new HashSet<T>(comparer);
-      HashSet<T> ret = new HashSet<T>(comparer);
-
-      foreach(T t in seq)
-      {
-        if (!dis.Add(t))
-          ret.Add(t);
-      }
-
-      return ret;
+      return seq
+        .WhereNot(dis.Add)
+        .ToList();
     }
 
-    public static ISet<T> NonDistinct<T>(this IEnumerable<T> seq) =>
+    public static IReadOnlyCollection<T> NonDistinct<T>(this IEnumerable<T> seq) =>
       seq.NonDistinct(EqualityComparer<T>.Default);
   }
 }
