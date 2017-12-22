@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Monads.Collections;
-using Monads.Either;
-using Monads.Maybe;
-using static Monads.Either.Result;
-using static Monads.Maybe.Maybe;
 
 namespace Monads.Linq
 {
