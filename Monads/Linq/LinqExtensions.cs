@@ -84,5 +84,31 @@ namespace Monads.Linq
       else
         return seq.Aggregate(semiGroup);
     }
+
+    public static bool SequenceDistinct<T>(this IEnumerable<T> seq, IEqualityComparer<T> comparer)
+    {
+      HashSet<T> set = new HashSet<T>(comparer);
+      return seq.All(set.Add);
+    }
+
+    public static bool SequenceDistinct<T>(this IEnumerable<T> seq) =>
+      seq.SequenceDistinct(EqualityComparer<T>.Default);
+
+    public static ISet<T> NonDistinct<T>(this IEnumerable<T> seq, IEqualityComparer<T> comparer)
+    {
+      HashSet<T> dis = new HashSet<T>(comparer);
+      HashSet<T> ret = new HashSet<T>(comparer);
+
+      foreach(T t in seq)
+      {
+        if (!dis.Add(t))
+          ret.Add(t);
+      }
+
+      return ret;
+    }
+
+    public static ISet<T> NonDistinct<T>(this IEnumerable<T> seq) =>
+      seq.NonDistinct(EqualityComparer<T>.Default);
   }
 }
