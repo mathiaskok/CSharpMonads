@@ -50,7 +50,7 @@ namespace Monads.Maybe
 
     public static T Value<T>(IMaybe<T> m) => m.Value;
 
-    public static IMaybe<U> Map<T, U>(this IMaybe<T> m, Func<T, U> mapper)
+    public static IMaybe<U> Select<T, U>(this IMaybe<T> m, Func<T, U> mapper)
     {
       if (m.HasValue)
         return Some(mapper(m.Value));
@@ -58,12 +58,32 @@ namespace Monads.Maybe
         return None<U>();
     }
 
-    public static IMaybe<U> Bind<T, U>(this IMaybe<T> m, Func<T, IMaybe<U>> binder)
+    public static IMaybe<T> Where<T>(this IMaybe<T> m, Func<T, bool> predicate)
+    {
+      return m.SelectMany(t => predicate(t) ? m : None<T>());
+    }
+
+    public static IMaybe<U> SelectMany<T, U>(this IMaybe<T> m, Func<T, IMaybe<U>> binder)
     {
       if (m.HasValue)
         return binder(m.Value);
       else
         return None<U>();
+    }
+
+    public static IMaybe<V> SelectMany<T, U, V>(
+      this IMaybe<T> m, 
+      Func<T, IMaybe<U>> binder,
+      Func<T, U, V> valueSelector)
+    {
+      if (m.HasValue)
+      {
+        T t = m.Value;
+        return binder(t)
+          .Select(u => valueSelector(t, u));
+      }
+      else
+        return None<V>();
     }
 
     public static IMaybe<U> BindNullable<T, U>(this IMaybe<T> m, Func<T, U> binder)
@@ -95,24 +115,24 @@ namespace Monads.Maybe
     public static IMaybe<U> Apply<T, U>(this IMaybe<Func<T, U>> func, IMaybe<T> m)
     {
       if (func.HasValue)
-        return m.Map(func.Value);
+        return m.Select(func.Value);
       else
         return None<U>();
     }
 
     public static Func<IMaybe<T>, IMaybe<U>> Lift<T, U>(this Func<T, U> func)
     {
-      return m => m.Map(func);
+      return m => m.Select(func);
     }
 
     public static Func<IMaybe<T>, IMaybe<U>, IMaybe<V>> Lift<T, U, V>(this Func<T, U, V> func)
     {
-      return (m1, m2) => m1.Map(func.Curry()).Apply(m2);
+      return (m1, m2) => m1.Select(func.Curry()).Apply(m2);
     }
 
     public static Func<IMaybe<T>, IMaybe<U>, IMaybe<V>, IMaybe<X>> Lift<T, U, V, X>(this Func<T, U, V, X> func)
     {
-      return (m1, m2, m3) => m1.Map(func.Curry()).Apply(m2).Apply(m3);
+      return (m1, m2, m3) => m1.Select(func.Curry()).Apply(m2).Apply(m3);
     }
 
     public static IMaybe<V> Combine<T, U, V>(this IMaybe<T> t, IMaybe<U> u, Func<T, U, V> combiner)
