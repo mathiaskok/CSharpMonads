@@ -49,7 +49,7 @@ namespace Monads.Either
     public static IResult<TSuccess, TFailure> Return<TSuccess, TFailure>(TSuccess result) =>
       Success<TSuccess, TFailure>(result);
 
-    public static IResult<USuccess, TFailure> Map<TSuccess, USuccess, TFailure>(
+    public static IResult<USuccess, TFailure> Select<TSuccess, USuccess, TFailure>(
       this IResult<TSuccess, TFailure> result,
       Func<TSuccess, USuccess> mapper)
     {
@@ -67,13 +67,28 @@ namespace Monads.Either
         Success<TSuccess, UFailure>(resut.SuccessResult);
     }
 
-    public static IResult<USuccess, TFailure> Bind<TSuccess, USuccess, TFailure>(
+    public static IResult<USuccess, TFailure> SelectMany<TSuccess, USuccess, TFailure>(
       this IResult<TSuccess, TFailure> result,
       Func<TSuccess, IResult<USuccess, TFailure>> binder)
     {
       return result.IsSuccess ?
         binder(result.SuccessResult) :
         Failure<USuccess, TFailure>(result.FailureResult);
+    }
+
+    public static IResult<VSuccess, TFailure> SelectMany<TSuccess, USuccess, VSuccess, TFailure>(
+      this IResult<TSuccess, TFailure> result,
+      Func<TSuccess, IResult<USuccess, TFailure>> binder,
+      Func<TSuccess, USuccess, VSuccess> valueSelector)
+    {
+      if (result.IsSuccess)
+      {
+        TSuccess t = result.SuccessResult;
+        return binder(t)
+          .Select(u => valueSelector(t, u));
+      }
+      else
+        return Failure<VSuccess, TFailure>(result.FailureResult);
     }
 
     public static IResult<TSuccess, TFailure> Combine<TSuccess, TFailure>(
@@ -103,7 +118,7 @@ namespace Monads.Either
       IResult<TSuccess, TFailure> result)
     {
       if (func.IsSuccess)
-        return result.Map(func.SuccessResult);
+        return result.Select(func.SuccessResult);
       else
         return Failure<USuccess, TFailure>(func.FailureResult);
     }
@@ -123,13 +138,13 @@ namespace Monads.Either
     public static Func<IResult<TSuccess, TFailure>, IResult<USuccess, TFailure>, IResult<VSuccess, TFailure>> Lift<TSuccess, USuccess, VSuccess, TFailure>(
       Func<TSuccess, USuccess, VSuccess> func)
     {
-      return (r1, r2) => r1.Map(func.Curry()).Apply(r2);
+      return (r1, r2) => r1.Select(func.Curry()).Apply(r2);
     }
 
     public static Func<IResult<TSuccess, TFailure>, IResult<USuccess, TFailure>, IResult<VSuccess, TFailure>, IResult<XSuccess, TFailure>> Lift<TSuccess, USuccess, VSuccess, XSuccess, TFailure>(
       Func<TSuccess, USuccess, VSuccess, XSuccess> func)
     {
-      return (r1, r2, r3) => r1.Map(func.Curry()).Apply(r2).Apply(r3);
+      return (r1, r2, r3) => r1.Select(func.Curry()).Apply(r2).Apply(r3);
     }
 
     public static IEnumerable<TSuccess> SelectSuccess<TSuccess, TFailure>(
