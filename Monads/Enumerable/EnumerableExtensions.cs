@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Monads.Collections;
 
-namespace Monads.Linq
+namespace Monads.Enumerable
 {
-  public static class LinqExtensions
+  public static class EnumerableExtensions
   {
     public static IEnumerable<T> Intersperse<T>(this IEnumerable<T> seq, T sep)
     {
