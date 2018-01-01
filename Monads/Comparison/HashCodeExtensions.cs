@@ -9,7 +9,7 @@ namespace Monads.Comparison
     public const int StepHashCode = 486187739; //Large Prime
 
     public static int HashWith<T>(this int i, T t) =>
-      (i * StepHashCode) + t.GetHashCode();
+      (i * StepHashCode) + (t?.GetHashCode() ?? 0);
 
     public static int HashWith(this int i, int o) =>
       (i * StepHashCode) + o;
@@ -20,7 +20,7 @@ namespace Monads.Comparison
       int hash = BaseHashCode;
 
       for (int i = 0; i < l; i++)
-        hash = (hash * StepHashCode) + arr[i].GetHashCode();
+        hash = (hash * StepHashCode) + (arr[i]?.GetHashCode() ?? 0);
 
       return hash;
     }
