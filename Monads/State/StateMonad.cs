@@ -15,70 +15,131 @@ namespace Monads.State
     public static StateMonad<TValue, TState> Return(TValue value) =>
       new StateMonad<TValue, TState>(s => (value, s));
 
-    public StateMonad<UValue, TState> Bind<UValue>(Func<TValue, Func<TState, (UValue, TState)>> binder)
+    private UValue IdentityValueSelector<UValue>(TValue t, UValue u) => u;
+
+    public StateMonad<UValue, TState> SelectMany<UValue>(
+      Func<TValue, Func<TState, (UValue, TState)>> binder)
     {
-      return new StateMonad<UValue, TState>(s =>
-      {
-        (var tv, var ts) = StateFunction(s);
-        return binder(tv)(ts);
-      });
+      return SelectMany(binder, IdentityValueSelector);
     }
 
-    public StateMonad<UValue, TState> Bind<UValue>(Func<TValue, TState, (UValue, TState)> binder)
+    public StateMonad<VValue, TState> SelectMany<UValue, VValue>(
+      Func<TValue, Func<TState, (UValue, TState)>> binder,
+      Func<TValue, UValue, VValue> valueSelector)
     {
-      return new StateMonad<UValue, TState>(s =>
-      {
-        (var tv, var ts) = StateFunction(s);
-        return binder(tv, ts);
-      });
-    }
-
-    public StateMonad<UValue, TState> Bind<UValue>(Func<TValue, Func<TState, Tuple<UValue, TState>>> binder)
-    {
-      return new StateMonad<UValue, TState>(s =>
+      return new StateMonad<VValue, TState>(s =>
       {
         (var tv, var ts) = StateFunction(s);
         (var uv, var us) = binder(tv)(ts);
-        return (uv, us);
+        return (valueSelector(tv, uv), us);
       });
     }
 
-    public StateMonad<UValue, TState> Bind<UValue>(Func<TValue, TState, Tuple<UValue, TState>> binder)
+    public StateMonad<UValue, TState> SelectMany<UValue>(
+      Func<TValue, TState, (UValue, TState)> binder)
     {
-      return new StateMonad<UValue, TState>(s =>
+      return SelectMany(binder, IdentityValueSelector);
+    }
+
+    public StateMonad<VValue, TState> SelectMany<UValue, VValue>(
+      Func<TValue, TState, (UValue, TState)> binder,
+      Func<TValue, UValue, VValue> valueSelector)
+    {
+      return new StateMonad<VValue, TState>(s =>
       {
         (var tv, var ts) = StateFunction(s);
         (var uv, var us) = binder(tv, ts);
-        return (uv, us);
+        return (valueSelector(tv, uv), us);
       });
     }
 
-    public StateMonad<UValue, TState> Bind<UValue>(Func<TValue, Func<TState, KeyValuePair<UValue, TState>>> binder)
+    public StateMonad<UValue, TState> SelectMany<UValue>(
+      Func<TValue, Func<TState, Tuple<UValue, TState>>> binder)
     {
-      return new StateMonad<UValue, TState>(s =>
+      return SelectMany(binder, IdentityValueSelector);
+    }
+
+    public StateMonad<VValue, TState> SelectMany<UValue, VValue>(
+      Func<TValue, Func<TState, Tuple<UValue, TState>>> binder,
+      Func<TValue, UValue, VValue> valueSelector)
+    {
+      return new StateMonad<VValue, TState>(s =>
+      {
+        (var tv, var ts) = StateFunction(s);
+        (var uv, var us) = binder(tv)(ts);
+        return (valueSelector(tv, uv), us);
+      });
+    }
+
+    public StateMonad<UValue, TState> SelectMany<UValue>(
+      Func<TValue, TState, Tuple<UValue, TState>> binder)
+    {
+      return SelectMany(binder, IdentityValueSelector);
+    }
+
+    public StateMonad<VValue, TState> SelectMany<UValue, VValue>(
+      Func<TValue, TState, Tuple<UValue, TState>> binder,
+      Func<TValue, UValue, VValue> valueSelector)
+    {
+      return new StateMonad<VValue, TState>(s =>
+      {
+        (var tv, var ts) = StateFunction(s);
+        (var uv, var us) = binder(tv, ts);
+        return (valueSelector(tv, uv), us);
+      });
+    }
+
+    public StateMonad<UValue, TState> SelectMany<UValue>(
+      Func<TValue, Func<TState, KeyValuePair<UValue, TState>>> binder)
+    {
+      return SelectMany(binder, IdentityValueSelector);
+    }
+
+    public StateMonad<VValue, TState> SelectMany<UValue, VValue>(
+      Func<TValue, Func<TState, KeyValuePair<UValue, TState>>> binder,
+      Func<TValue, UValue, VValue> valueSelector)
+    {
+      return new StateMonad<VValue, TState>(s =>
       {
         (var tv, var ts) = StateFunction(s);
         var kvp = binder(tv)(ts);
-        return (kvp.Key, kvp.Value);
+        return (valueSelector(tv, kvp.Key), kvp.Value);
       });
     }
 
-    public StateMonad<UValue, TState> Bind<UValue>(Func<TValue, TState, KeyValuePair<UValue, TState>> binder)
+    public StateMonad<UValue, TState> SelectMany<UValue>(
+      Func<TValue, TState, KeyValuePair<UValue, TState>> binder)
     {
-      return new StateMonad<UValue, TState>(s =>
+      return SelectMany(binder, IdentityValueSelector);
+    }
+
+    public StateMonad<VValue, TState> SelectMany<UValue, VValue>(
+      Func<TValue, TState, KeyValuePair<UValue, TState>> binder,
+      Func<TValue, UValue, VValue> valueSelector)
+    {
+      return new StateMonad<VValue, TState>(s =>
       {
         (var tv, var ts) = StateFunction(s);
         var kvp = binder(tv, ts);
-        return (kvp.Key, kvp.Value);
+        return (valueSelector(tv, kvp.Key), kvp.Value);
       });
     }
 
-    public StateMonad<UValue, TState> Bind<UValue>(Func<TValue, StateMonad<UValue, TState>> binder)
+    public StateMonad<UValue, TState> SelectMany<UValue>(
+      Func<TValue, StateMonad<UValue, TState>> binder)
     {
-      return new StateMonad<UValue, TState>(s =>
+      return SelectMany(binder, IdentityValueSelector);
+    }
+
+    public StateMonad<VValue, TState> SelectMany<UValue, VValue>(
+      Func<TValue, StateMonad<UValue, TState>> binder,
+      Func<TValue, UValue, VValue> valueSelector)
+    {
+      return new StateMonad<VValue, TState>(s =>
       {
         (var tv, var ts) = StateFunction(s);
-        return binder(tv).StateFunction(ts);
+        (var uv, var us) = binder(tv).StateFunction(ts);
+        return (valueSelector(tv, uv), us);
       });
     }
 
@@ -96,7 +157,7 @@ namespace Monads.State
       });
     }
 
-    public StateMonad<UValue, TState> Map<UValue>(Func<TValue, UValue> mapper)
+    public StateMonad<UValue, TState> Select<UValue>(Func<TValue, UValue> mapper)
     {
       return new StateMonad<UValue, TState>(s =>
       {
