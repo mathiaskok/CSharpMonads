@@ -93,9 +93,46 @@ namespace Monads.Comparison
     {
       return new DelegateEqualityComparer<T>(
         (x, y) => Equals(x ?? t, y ?? t),
-        o => o != null ? 
-          o.GetHashCode() : 
+        o => o != null ?
+          o.GetHashCode() :
           t.GetHashCode());
+    }
+
+    public static IEqualityComparer<T> NullToValueObjEqualityComparer<T>(
+      T t,
+      IEqualityComparer<T> comparer)
+      where T : class
+    {
+      return new DelegateEqualityComparer<T>(
+        (x, y) => comparer.Equals(x ?? t, y ?? t),
+        o => o != null ?
+          comparer.GetHashCode(o) :
+          comparer.GetHashCode(t));
+    }
+
+    public static CombinedDelegateComparer<T> NullToValueObjComparer<T>(T t)
+      where T : class, IComparable<T>
+    {
+      return new CombinedDelegateComparer<T>(
+        (x, y) => Equals(x ?? t, y ?? t),
+        o => o != null ?
+          o.GetHashCode() :
+          t.GetHashCode(),
+        (x, y) => (x ?? t).CompareTo(y ?? t));
+    }
+
+    public static CombinedDelegateComparer<T> NullToValueObjComparer<T>(
+      T t,
+      IEqualityComparer<T> eqComparer,
+      IComparer<T> comparer)
+      where T : class
+    {
+      return new CombinedDelegateComparer<T>(
+        (x, y) => eqComparer.Equals(x ?? t, y ?? t),
+        o => o != null ?
+          eqComparer.GetHashCode(o) :
+          eqComparer.GetHashCode(t),
+        (x, y) => comparer.Compare(x ?? t, y ?? t));
     }
 
     public static IEqualityComparer<T?> NullToValueStructEqualityComparer<T>(T t)
@@ -106,6 +143,43 @@ namespace Monads.Comparison
         o => o.HasValue ?
           o.Value.GetHashCode() :
           t.GetHashCode());
+    }
+
+    public static IEqualityComparer<T?> NullToValueStructEqualityComparer<T>(
+      T t,
+      IEqualityComparer<T> comparer)
+      where T : struct
+    {
+      return new DelegateEqualityComparer<T?>(
+        (x, y) => Equals(x ?? t, y ?? t),
+        o => o.HasValue ?
+          comparer.GetHashCode(o.Value) :
+          comparer.GetHashCode(t));
+    }
+
+    public static CombinedDelegateComparer<T?> NullToValueStructComparer<T>(T t)
+      where T : struct, IComparable<T>
+    {
+      return new CombinedDelegateComparer<T?>(
+        (x, y) => Equals(x ?? t, y ?? t),
+        o => o.HasValue ?
+          o.Value.GetHashCode() :
+          t.GetHashCode(),
+        (x, y) => (x ?? t).CompareTo(y ?? t));
+    }
+
+    public static CombinedDelegateComparer<T?> NullToValueStructComparer<T>(
+      T t,
+      IEqualityComparer<T> eqComparer,
+      IComparer<T> comparer)
+      where T : struct
+    {
+      return new CombinedDelegateComparer<T?>(
+        (x, y) => eqComparer.Equals(x ?? t, y ?? t),
+        o => o.HasValue ?
+          eqComparer.GetHashCode(o.Value) :
+          eqComparer.GetHashCode(t),
+        (x, y) => comparer.Compare(x ?? t, y ?? t));
     }
   }
 }
