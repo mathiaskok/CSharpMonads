@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using static Monads.FunctionStructures.StandardFunctions;
 
 namespace Monads.State
 {
@@ -15,12 +16,10 @@ namespace Monads.State
     public static StateMonad<TValue, TState> Return(TValue value) =>
       new StateMonad<TValue, TState>(s => (value, s));
 
-    private UValue IdentityValueSelector<UValue>(TValue t, UValue u) => u;
-
     public StateMonad<UValue, TState> SelectMany<UValue>(
       Func<TValue, Func<TState, (UValue, TState)>> binder)
     {
-      return SelectMany(binder, IdentityValueSelector);
+      return SelectMany(binder, IdValueSelector);
     }
 
     public StateMonad<VValue, TState> SelectMany<UValue, VValue>(
@@ -38,7 +37,7 @@ namespace Monads.State
     public StateMonad<UValue, TState> SelectMany<UValue>(
       Func<TValue, TState, (UValue, TState)> binder)
     {
-      return SelectMany(binder, IdentityValueSelector);
+      return SelectMany(binder, IdValueSelector);
     }
 
     public StateMonad<VValue, TState> SelectMany<UValue, VValue>(
@@ -56,7 +55,7 @@ namespace Monads.State
     public StateMonad<UValue, TState> SelectMany<UValue>(
       Func<TValue, Func<TState, Tuple<UValue, TState>>> binder)
     {
-      return SelectMany(binder, IdentityValueSelector);
+      return SelectMany(binder, IdValueSelector);
     }
 
     public StateMonad<VValue, TState> SelectMany<UValue, VValue>(
@@ -74,7 +73,7 @@ namespace Monads.State
     public StateMonad<UValue, TState> SelectMany<UValue>(
       Func<TValue, TState, Tuple<UValue, TState>> binder)
     {
-      return SelectMany(binder, IdentityValueSelector);
+      return SelectMany(binder, IdValueSelector);
     }
 
     public StateMonad<VValue, TState> SelectMany<UValue, VValue>(
@@ -92,7 +91,7 @@ namespace Monads.State
     public StateMonad<UValue, TState> SelectMany<UValue>(
       Func<TValue, Func<TState, KeyValuePair<UValue, TState>>> binder)
     {
-      return SelectMany(binder, IdentityValueSelector);
+      return SelectMany(binder, IdValueSelector);
     }
 
     public StateMonad<VValue, TState> SelectMany<UValue, VValue>(
@@ -110,7 +109,7 @@ namespace Monads.State
     public StateMonad<UValue, TState> SelectMany<UValue>(
       Func<TValue, TState, KeyValuePair<UValue, TState>> binder)
     {
-      return SelectMany(binder, IdentityValueSelector);
+      return SelectMany(binder, IdValueSelector);
     }
 
     public StateMonad<VValue, TState> SelectMany<UValue, VValue>(
@@ -128,7 +127,7 @@ namespace Monads.State
     public StateMonad<UValue, TState> SelectMany<UValue>(
       Func<TValue, StateMonad<UValue, TState>> binder)
     {
-      return SelectMany(binder, IdentityValueSelector);
+      return SelectMany(binder, IdValueSelector);
     }
 
     public StateMonad<VValue, TState> SelectMany<UValue, VValue>(

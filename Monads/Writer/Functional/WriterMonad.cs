@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using static Monads.FunctionStructures.StandardFunctions;
 
 namespace Monads.Writer.Functional
 {
@@ -27,8 +28,6 @@ namespace Monads.Writer.Functional
       return new WriterMonad<UValue, TState>(newValue, StateMonoid(State, newState), StateMonoid);
     }
 
-    private UValue IdentityValueSelector<UValue>(TValue t, UValue u) => u;
-
     public WriterMonad<UValue, TState> Select<UValue>(Func<TValue, UValue> mapper)
     {
       return NextWriter(mapper(Value));
@@ -37,19 +36,19 @@ namespace Monads.Writer.Functional
     public WriterMonad<UValue, TState> SelectMany<UValue>(
       Func<TValue, (UValue, TState)> binder)
     {
-      return SelectMany(binder, IdentityValueSelector);
+      return SelectMany(binder, IdValueSelector);
     }
 
     public WriterMonad<UValue, TState> SelectMany<UValue>(
       Func<TValue, Tuple<UValue, TState>> binder)
     {
-      return SelectMany(binder, IdentityValueSelector);
+      return SelectMany(binder, IdValueSelector);
     }
 
     public WriterMonad<UValue, TState> SelectMany<UValue>(
       Func<TValue, KeyValuePair<UValue, TState>> binder)
     {
-      return SelectMany(binder, IdentityValueSelector);
+      return SelectMany(binder, IdValueSelector);
     }
 
     public WriterMonad<VValue, TState> SelectMany<UValue, VValue>(

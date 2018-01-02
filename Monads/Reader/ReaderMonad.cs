@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using static Monads.FunctionStructures.StandardFunctions;
 
 namespace Monads.Reader
 {
   public static class ReaderMonad
   {
-    private static UValue IdentityValueSelector<TValue, UValue>(TValue t, UValue u) => u;
-
     public static Func<TState, UValue> Select<TValue, UValue, TState>(
       this Func<TState, TValue> reader,
       Func<TValue, UValue> mapper)
@@ -32,7 +29,7 @@ namespace Monads.Reader
       this Func<TState, TValue> reader,
       Func<TValue, TState, UValue> binder)
     {
-      return reader.SelectMany(binder, IdentityValueSelector);
+      return reader.SelectMany(binder, IdValueSelector);
     }
 
     public static Func<TState, VValue> SelectMany<TValue, UValue, VValue, TState>(
@@ -52,7 +49,7 @@ namespace Monads.Reader
       this Func<TState, TValue> reader,
       Func<TValue, Func<TState, UValue>> binder)
     {
-      return reader.SelectMany(binder, IdentityValueSelector);
+      return reader.SelectMany(binder, IdValueSelector);
     }
   }
 }
