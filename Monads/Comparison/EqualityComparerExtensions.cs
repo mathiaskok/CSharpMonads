@@ -87,5 +87,25 @@ namespace Monads.Comparison
     {
       return FromComparers(comparers);
     }
+
+    public static IEqualityComparer<T> NullToValueObjEqualityComparer<T>(T t)
+      where T : class
+    {
+      return new DelegateEqualityComparer<T>(
+        (x, y) => Equals(x ?? t, y ?? t),
+        o => o != null ? 
+          o.GetHashCode() : 
+          t.GetHashCode());
+    }
+
+    public static IEqualityComparer<T?> NullToValueStructEqualityComparer<T>(T t)
+      where T : struct
+    {
+      return new DelegateEqualityComparer<T?>(
+        (x, y) => Equals(x ?? t, y ?? t),
+        o => o.HasValue ?
+          o.Value.GetHashCode() :
+          t.GetHashCode());
+    }
   }
 }
