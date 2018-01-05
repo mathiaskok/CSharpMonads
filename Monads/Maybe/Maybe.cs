@@ -86,30 +86,48 @@ namespace Monads.Maybe
         return None<V>();
     }
 
-    public static IMaybe<U> BindNullable<T, U>(this IMaybe<T> m, Func<T, U> binder)
+    public static IMaybe<U> SelectMany<T, U>(this IMaybe<T> m, Func<T, U> binder)
+      where U : class
+    {
+      return m.SelectMany(binder, StandardFunctions.IdValueSelector);
+    }
+
+    public static IMaybe<V> SelectMany<T, U, V>(
+      this IMaybe<T> m, 
+      Func<T, U> binder,
+      Func<T, U, V> valueSelector)
       where U : class
     {
       if (m.HasValue)
       {
         U value = binder(m.Value);
         if (value != null)
-          return Some(value);
+          return Some(valueSelector(m.Value, value));
       }
 
-      return None<U>();
+      return None<V>();
     }
 
-    public static IMaybe<U> BindNullable<T, U>(this IMaybe<T> m, Func<T, U?> binder)
+    public static IMaybe<U> SelectMany<T, U>(this IMaybe<T> m, Func<T, U?> binder)
+      where U : struct
+    {
+      return m.SelectMany(binder, StandardFunctions.IdValueSelector);
+    }
+
+    public static IMaybe<V> SelectMany<T, U, V>(
+      this IMaybe<T> m, 
+      Func<T, U?> binder,
+      Func<T, U, V> valueSelector)
       where U : struct
     {
       if (m.HasValue)
       {
         U? value = binder(m.Value);
         if (value.HasValue)
-          return Some(value.Value);
+          return Some(valueSelector(m.Value, value.Value));
       }
 
-      return None<U>();
+      return None<V>();
     }
 
     public static IMaybe<U> Apply<T, U>(this IMaybe<Func<T, U>> func, IMaybe<T> m)
