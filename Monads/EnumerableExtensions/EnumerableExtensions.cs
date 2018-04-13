@@ -103,5 +103,22 @@ namespace Monads.EnumerableExtensions
 
     public static IReadOnlyCollection<T> NonDistinct<T>(this IEnumerable<T> seq) =>
       seq.NonDistinct(EqualityComparer<T>.Default);
+
+    public static U FoldRight<T, U>(this IEnumerable<T> src, U zero, Func<T, U, U> folder)
+    {
+      U FoldRightInternal(IEnumerator<T> enumerator)
+      {
+        if (enumerator.MoveNext())
+        {
+          T cur = enumerator.Current;
+          U state = FoldRightInternal(enumerator);
+          return folder(cur, state);
+        }
+        else
+          return zero;
+      }
+
+      return FoldRightInternal(src.GetEnumerator());
+    }
   }
 }
