@@ -51,5 +51,11 @@ namespace Monads.Collections
     {
       return seq.ToDictionary(EqualityComparer<TKey>.Default);
     }
+
+    public static void Deconstruct<K, V>(this KeyValuePair<K, V> kvp, out K key, out V value)
+    {
+      key = kvp.Key;
+      value = kvp.Value;
+    }
   }
 }
