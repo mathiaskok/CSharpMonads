@@ -30,7 +30,13 @@ namespace Monads.Collections.Immutable
 
     public int Count => ((IEnumerable<KeyValuePair<K, V>>)this).Count();
 
-    private ReadOnlyToImmutableDictionaryAdapter(
+    public ReadOnlyToImmutableDictionaryAdapter(IReadOnlyDictionary<K, V> adaptee)
+    {
+      Adaptee = adaptee;
+      Immutable = ImmutableDictionary<K, V>.Empty;
+    }
+
+    public ReadOnlyToImmutableDictionaryAdapter(
       IReadOnlyDictionary<K, V> adaptee,
       IImmutableDictionary<K, V> immutable)
     {
