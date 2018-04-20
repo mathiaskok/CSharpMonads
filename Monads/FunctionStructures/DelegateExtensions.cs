@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Monads.Unit;
 using static Monads.Comparison.EqualityComparerExtensions;
 
 namespace Monads.FunctionStructures
@@ -82,5 +83,17 @@ namespace Monads.FunctionStructures
           u =>
             v => func(t, u, v);
     }
+
+    public static Func<UnitType> AsFunc(Action action) =>
+      () => { action(); return UnitType.Value; };
+
+    public static Func<T, UnitType> AsFunc<T>(Action<T> action) =>
+      t => { action(t); return UnitType.Value; };
+
+    public static Func<T, U, UnitType> AsFunc<T, U>(Action<T, U> action) =>
+      (t, u) => { action(t, u); return UnitType.Value; };
+
+    public static Func<T, U, V, UnitType> AsFunc<T, U, V>(Action<T, U, V> action) =>
+      (t, u, v) => { action(t, u, v); return UnitType.Value; };
   }
 }

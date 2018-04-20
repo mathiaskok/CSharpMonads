@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Monads.UnitType
+namespace Monads.Unit
 {
   public struct UnitType : 
     IEquatable<UnitType>, 
