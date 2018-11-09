@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Monads.Collections.Immutable;
 using Monads.Collections.ReadOnly;
 
 namespace Monads.Collections
@@ -51,5 +52,7 @@ namespace Monads.Collections
 
       return Internal(0, list.Count - 1);
     }
+
+    private static IReadOnlyList<T> Cache<T>(this IEnumerable<T> src) => new LazyCachingList<T>(src);
   }
 }
