@@ -36,14 +36,22 @@ namespace Monads.Collections.Immutable
 
     private bool ActualizeNext()
     {
-      if (_enumerator != null && _enumerator.MoveNext())
+      if (_enumerator != null)
       {
-        _list.Add(_enumerator.Current);
-        return true;
+        if (_enumerator.MoveNext())
+        {
+          _list.Add(_enumerator.Current);
+          return true;
+        }
+        else
+        {
+          _enumerator.Dispose();
+          _enumerator = null;
+          return false;
+        }
       }
       else
       {
-        _enumerator = null;
         return false;
       }
     }
