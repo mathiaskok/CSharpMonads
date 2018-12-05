@@ -7,6 +7,9 @@ namespace Monads.Comparison
   {
     private readonly IReadOnlyCollection<IEqualityComparer<T>> Comparers;
 
+    public MultiEqualityComparer(params IEqualityComparer<T>[] comparers)
+      : this((IReadOnlyCollection<IEqualityComparer<T>>) comparers){}
+
     public MultiEqualityComparer(IReadOnlyCollection<IEqualityComparer<T>> comparers)
     {
       Comparers = comparers;
@@ -16,8 +19,6 @@ namespace Monads.Comparison
       Comparers.All(c => c.Equals(x, y));
 
     public override int GetHashCode(T obj) =>
-      Comparers
-        .Select(c => c.GetHashCode(obj))
-        .SequenceHashCode();
+      Comparers.SequenceHashCode(c => c.GetHashCode(obj));
   }
 }

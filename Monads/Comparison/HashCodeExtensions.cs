@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Monads.Comparison
@@ -28,12 +29,12 @@ namespace Monads.Comparison
     public static int SequenceHashCode(this IEnumerable<int> seq) =>
       seq.Aggregate(BaseHashCode, HashWith);
 
-    public static int SequenceHashCode<T>(this IEnumerable<T> seq, IEqualityComparer<T> comparer) =>
+    public static int SequenceHashCode<T>(this IEnumerable<T> seq, Func<T, int> hashFunc) =>
       seq
-        .Select(comparer.GetHashCode)
+        .Select(hashFunc)
         .SequenceHashCode();
 
     public static int SequenceHashCode<T>(this IEnumerable<T> seq) =>
-      seq.SequenceHashCode(EqualityComparer<T>.Default);
+      seq.SequenceHashCode(EqualityComparer<T>.Default.GetHashCode);
   }
 }
