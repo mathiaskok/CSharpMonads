@@ -162,5 +162,13 @@ namespace Monads.Either
         .Where(IsFailure)
         .Select(FailureResult);
     }
+
+    public static IResult<S, F> Join<S, F>(this IResult<IResult<S, F>, F> nestedResult)
+    {
+      if (nestedResult.IsSuccess)
+        return nestedResult.SuccessResult;
+      else
+        return Failure<S, F>(nestedResult.FailureResult);
+    }
   }
 }
